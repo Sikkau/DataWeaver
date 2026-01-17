@@ -1,0 +1,684 @@
+basePath: /api/v1
+definitions:
+  model.AuthResponse:
+    properties:
+      expires_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+      user:
+        $ref: '#/definitions/model.UserInfo'
+    type: object
+  model.ColumnInfoResponse:
+    properties:
+      name:
+        type: string
+      nullable:
+        type: boolean
+      primary_key:
+        type: boolean
+      type:
+        type: string
+    type: object
+  model.CreateDataSourceRequest:
+    properties:
+      database:
+        type: string
+      description:
+        maxLength: 500
+        type: string
+      host:
+        type: string
+      name:
+        maxLength: 100
+        minLength: 1
+        type: string
+      password:
+        type: string
+      port:
+        maximum: 65535
+        minimum: 1
+        type: integer
+      ssl_mode:
+        type: string
+      type:
+        enum:
+        - mysql
+        - postgresql
+        - sqlserver
+        - oracle
+        type: string
+      username:
+        type: string
+    required:
+    - database
+    - host
+    - name
+    - password
+    - port
+    - type
+    - username
+    type: object
+  model.DataSourceResponse:
+    properties:
+      created_at:
+        type: string
+      database:
+        type: string
+      description:
+        type: string
+      host:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      port:
+        type: integer
+      ssl_mode:
+        type: string
+      status:
+        type: string
+      type:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+      username:
+        type: string
+    type: object
+  model.LoginRequest:
+    properties:
+      password:
+        example: password123
+        type: string
+      username:
+        example: admin
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  model.RegisterRequest:
+    properties:
+      email:
+        example: user@example.com
+        maxLength: 100
+        type: string
+      password:
+        example: password123
+        maxLength: 100
+        minLength: 6
+        type: string
+      username:
+        example: newuser
+        maxLength: 50
+        minLength: 3
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  model.TableInfoResponse:
+    properties:
+      columns:
+        items:
+          $ref: '#/definitions/model.ColumnInfoResponse'
+        type: array
+      name:
+        type: string
+      row_count:
+        type: integer
+      schema:
+        type: string
+    type: object
+  model.TestConnectionResult:
+    properties:
+      latency_ms:
+        type: integer
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  model.UpdateDataSourceRequest:
+    properties:
+      database:
+        type: string
+      description:
+        maxLength: 500
+        type: string
+      host:
+        type: string
+      name:
+        maxLength: 100
+        minLength: 1
+        type: string
+      password:
+        type: string
+      port:
+        maximum: 65535
+        minimum: 1
+        type: integer
+      ssl_mode:
+        type: string
+      status:
+        enum:
+        - active
+        - inactive
+        type: string
+      type:
+        enum:
+        - mysql
+        - postgresql
+        - sqlserver
+        - oracle
+        type: string
+      username:
+        type: string
+    type: object
+  model.UserInfo:
+    properties:
+      email:
+        example: admin@example.com
+        type: string
+      id:
+        example: 1
+        type: integer
+      is_active:
+        example: true
+        type: boolean
+      username:
+        example: admin
+        type: string
+    type: object
+  response.PagedResponse:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  response.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@dataweaver.io
+    name: DataWeaver Support
+  description: DataWeaver is a database connection management and MCP server tool.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: DataWeaver API
+  version: 1.0.0
+paths:
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and return JWT token
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.AuthResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: User login
+      tags:
+      - Auth
+  /api/v1/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user account
+      parameters:
+      - description: Registration information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.AuthResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: User registration
+      tags:
+      - Auth
+  /api/v1/datasources:
+    get:
+      consumes:
+      - application/json
+      description: Get a paginated list of datasources for the current user
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        name: size
+        type: integer
+      - description: Search keyword
+        in: query
+        name: keyword
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.PagedResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.DataSourceResponse'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: List datasources
+      tags:
+      - DataSources
+    post:
+      consumes:
+      - application/json
+      description: Create a new datasource
+      parameters:
+      - description: Datasource info
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateDataSourceRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.DataSourceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create datasource
+      tags:
+      - DataSources
+  /api/v1/datasources/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a datasource by ID
+      parameters:
+      - description: Datasource ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete datasource
+      tags:
+      - DataSources
+    get:
+      consumes:
+      - application/json
+      description: Get a datasource by ID
+      parameters:
+      - description: Datasource ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.DataSourceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get datasource
+      tags:
+      - DataSources
+    put:
+      consumes:
+      - application/json
+      description: Update a datasource by ID
+      parameters:
+      - description: Datasource ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Datasource info
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateDataSourceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.DataSourceResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update datasource
+      tags:
+      - DataSources
+  /api/v1/datasources/{id}/tables:
+    get:
+      consumes:
+      - application/json
+      description: Get the list of tables in a datasource
+      parameters:
+      - description: Datasource ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.TableInfoResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get datasource tables
+      tags:
+      - DataSources
+  /api/v1/datasources/{id}/test:
+    post:
+      consumes:
+      - application/json
+      description: Test the connection to a datasource
+      parameters:
+      - description: Datasource ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.TestConnectionResult'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Test datasource connection
+      tags:
+      - DataSources
+  /api/v1/datasources/test:
+    post:
+      consumes:
+      - application/json
+      description: Test database connection without saving
+      parameters:
+      - description: Connection info
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateDataSourceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.TestConnectionResult'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Test connection directly
+      tags:
+      - DataSources
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: Check if the service is running
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Health check
+      tags:
+      - Health
+securityDefinitions:
+  Bearer:
+    description: Enter "Bearer {token}" to authenticate
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

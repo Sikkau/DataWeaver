@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go mod init:*)",
+      "Bash(chmod:*)",
+      "Bash(npm create:*)",
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(npx tailwindcss init -p)",
+      "Bash(npx shadcn@latest init:*)",
+      "Bash(npm cache clean:*)",
+      "Bash(npm exec:*)",
+      "Bash(npx:*)",
+      "Bash(HOME=/tmp npm exec shadcn@latest -- add button card input select table badge toast tabs dialog form label textarea sheet dropdown-menu separator skeleton alert command popover calendar --yes)",
+      "Bash(HOME=/tmp npm exec:*)",
+      "Bash(npm run build:*)",
+      "Bash(go get:*)",
+      "Bash(go test:*)",
+      "Bash(make run:*)",
+      "Bash(kill:*)",
+      "Bash(tree:*)",
+      "Bash(swag init:*)",
+      "Bash(go install:*)",
+      "Bash(~/go/bin/swag init:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill -9)",
+      "Bash(curl:*)",
+      "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Njg0MDUyNjksImlhdCI6MTc2ODMxODg2OSwidXNlcl9pZCI6MSwidXNlcm5hbWUiOiJ0ZXN0dXNlciJ9.bQrjwGSBml5V2YRiDmd77s6N8QRIKoL8JtV6CuppiPU\")"
+    ]
+  }
+}

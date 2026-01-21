@@ -6,6 +6,7 @@ import {
   Database,
   Search,
   Wrench,
+  Server,
   PlayCircle,
   Settings,
   Home,
@@ -24,6 +25,7 @@ export function Sidebar() {
     { icon: Database, label: t.nav.dataSources, path: '/datasources' },
     { icon: Search, label: t.nav.queries, path: '/queries' },
     { icon: Wrench, label: t.nav.tools, path: '/tools' },
+    { icon: Server, label: t.nav.mcpServers, path: '/mcp-servers' },
     { icon: PlayCircle, label: t.nav.jobs, path: '/jobs' },
     { icon: Settings, label: t.nav.settings, path: '/settings' },
   ]
@@ -51,7 +53,9 @@ export function Sidebar() {
 
       <nav className="space-y-1 p-2">
         {navItems.map((item) => {
-          const isActive = location.pathname === item.path
+          const isActive = item.path === '/'
+            ? location.pathname === '/'
+            : location.pathname.startsWith(item.path)
           return (
             <Link
               key={item.path}

@@ -26,6 +26,7 @@ export const translations = {
       dataSources: 'Data Sources',
       queries: 'Queries',
       tools: 'Tools',
+      mcpServers: 'MCP Servers',
       jobs: 'Jobs',
       settings: 'Settings',
     },
@@ -307,6 +308,190 @@ export const translations = {
       },
     },
 
+    // MCP Servers
+    mcpServers: {
+      title: 'MCP Servers',
+      subtitle: 'Manage and publish your MCP servers',
+      create: 'New Server',
+      searchPlaceholder: 'Search servers...',
+      empty: 'No MCP servers yet',
+      noResults: 'No servers found',
+      createFirst: 'Create your first server',
+      notFound: 'Server not found',
+      backToList: 'Back to list',
+
+      status: {
+        draft: 'Draft',
+        published: 'Published',
+        stopped: 'Stopped',
+        error: 'Error',
+      },
+
+      card: {
+        tools: 'tools',
+        noDescription: 'No description',
+        configure: 'Configure',
+        monitoring: 'Monitoring',
+        copyConfig: 'Copy Config',
+        publish: 'Publish',
+        stop: 'Stop',
+      },
+
+      createDialog: {
+        title: 'Create MCP Server',
+        subtitle: 'Create a new MCP server to expose your tools.',
+        name: 'Name',
+        namePlaceholder: 'my-mcp-server',
+        descriptionLabel: 'Description',
+        descriptionPlaceholder: 'Describe your MCP server...',
+      },
+
+      deleteDialog: {
+        title: 'Delete Server',
+        description: 'Are you sure you want to delete this MCP server? This action cannot be undone.',
+      },
+
+      configTabs: {
+        basic: 'Basic Info',
+        tools: 'Tools',
+        advanced: 'Advanced',
+        access: 'Access Control',
+      },
+
+      basicInfo: {
+        title: 'Basic Information',
+        subtitle: 'Configure the basic properties of your MCP server.',
+        name: 'Name',
+        namePlaceholder: 'my-mcp-server',
+        descriptionLabel: 'Description',
+        descriptionPlaceholder: 'Describe your MCP server...',
+        endpoint: 'Endpoint',
+        apiKey: 'API Key',
+      },
+
+      toolsTab: {
+        title: 'Tool Selection',
+        description: 'Select which tools to expose through this MCP server.',
+      },
+
+      advancedTab: {
+        title: 'Advanced Configuration',
+        description: 'Configure performance and behavior settings.',
+      },
+
+      accessTab: {
+        title: 'Access Control',
+        description: 'Configure security and access restrictions.',
+      },
+
+      toolSelector: {
+        available: 'Available Tools',
+        selected: 'Selected Tools',
+        searchPlaceholder: 'Search tools...',
+        selectAll: 'Select All',
+        noResults: 'No matching tools',
+        allSelected: 'All tools selected',
+        noSelected: 'No tools selected',
+        moveAllRight: 'Move all to right',
+        moveRight: 'Move selected to right',
+        moveLeft: 'Move selected to left',
+        moveAllLeft: 'Move all to left',
+      },
+
+      config: {
+        timeout: 'Timeout (seconds)',
+        timeoutHint: 'Maximum execution time for each tool call',
+        rateLimit: 'Rate Limit (requests/minute)',
+        rateLimitHint: 'Maximum number of requests allowed per minute',
+        logLevel: 'Log Level',
+        logLevelHint: 'Minimum log level to record',
+        logLevels: {
+          debug: 'Debug',
+          info: 'Info',
+          warn: 'Warning',
+          error: 'Error',
+        },
+        enableCache: 'Enable Cache',
+        enableCacheHint: 'Cache tool responses for repeated queries',
+        cacheExpiration: 'Cache Expiration (ms)',
+        cacheExpirationHint: 'How long to keep cached responses (default: 5 minutes)',
+      },
+
+      accessControl: {
+        apiKeyRequired: 'Require API Key',
+        apiKeyRequiredHint: 'Clients must provide a valid API key to access this server',
+        allowedOrigins: 'Allowed Origins (CORS)',
+        allowedOriginsHint: 'List of allowed origins for cross-origin requests. Leave empty to allow all.',
+        originPlaceholder: 'https://example.com',
+        ipWhitelist: 'IP Whitelist',
+        ipWhitelistHint: 'Only allow requests from these IP addresses. Leave empty to allow all.',
+        ipPlaceholder: '192.168.1.1 or 10.0.0.0/24',
+      },
+
+      actions: {
+        test: 'Test',
+        publish: 'Publish',
+      },
+
+      test: {
+        success: 'Test Passed',
+        failed: 'Test Failed',
+      },
+
+      configCopy: {
+        title: 'MCP Configuration',
+        description: 'Copy this configuration to use with your MCP client.',
+        usageTitle: 'How to use:',
+        step1: 'Copy the configuration below',
+        step2: 'Add it to your MCP client configuration file (e.g., claude_desktop_config.json)',
+        step3: 'Restart your MCP client to apply changes',
+        copy: 'Copy',
+        copied: 'Copied!',
+        copyFailed: 'Failed to copy',
+        loadFailed: 'Failed to load configuration',
+        serverName: 'Server',
+        endpoint: 'Endpoint',
+      },
+
+      monitoring: {
+        title: 'Monitoring Dashboard',
+        noData: 'No monitoring data available',
+        totalCalls: 'Total Calls',
+        today: 'today',
+        successRate: 'Success Rate',
+        excellent: 'Excellent',
+        good: 'Good',
+        needsAttention: 'Needs attention',
+        avgResponseTime: 'Avg Response Time',
+        fast: 'Fast',
+        normal: 'Normal',
+        slow: 'Slow',
+        topTool: 'Top Tool',
+        calls: 'calls',
+        callTrend: 'Call Trend',
+        callTrendDesc: 'Daily call volume over time',
+        successCalls: 'Success',
+        errorCalls: 'Errors',
+        topTools: 'Top Tools',
+        topToolsDesc: 'Most frequently called tools',
+        responseTimeDistribution: 'Response Time Distribution',
+        recentCalls: 'Recent Calls',
+        recentCallsDesc: 'Latest tool invocations',
+        time: 'Time',
+        tool: 'Tool',
+        status: 'Status',
+        responseTime: 'Response Time',
+        noLogs: 'No recent calls',
+        noChartData: 'No data to display',
+        autoRefreshOn: 'Auto-refresh ON',
+        autoRefreshOff: 'Auto-refresh OFF',
+        configure: 'Configure',
+        notPublished: 'Server not published',
+        notPublishedDesc: 'Publish the server to see monitoring data.',
+        goToConfigure: 'Go to Configure',
+      },
+    },
+
     // Queries
     queries: {
       title: 'Queries',
@@ -452,6 +637,7 @@ export const translations = {
       dataSources: '数据源',
       queries: '查询',
       tools: '工具',
+      mcpServers: 'MCP 服务器',
       jobs: '任务',
       settings: '设置',
     },
@@ -730,6 +916,190 @@ export const translations = {
         deleteError: '删除工具失败',
         testError: '测试工具失败',
         generateError: '生成描述失败',
+      },
+    },
+
+    // MCP Servers
+    mcpServers: {
+      title: 'MCP 服务器',
+      subtitle: '管理和发布你的 MCP 服务器',
+      create: '新建服务器',
+      searchPlaceholder: '搜索服务器...',
+      empty: '暂无 MCP 服务器',
+      noResults: '没有找到服务器',
+      createFirst: '创建第一个服务器',
+      notFound: '服务器未找到',
+      backToList: '返回列表',
+
+      status: {
+        draft: '草稿',
+        published: '已发布',
+        stopped: '已停止',
+        error: '错误',
+      },
+
+      card: {
+        tools: '个工具',
+        noDescription: '暂无描述',
+        configure: '配置',
+        monitoring: '监控',
+        copyConfig: '复制配置',
+        publish: '发布',
+        stop: '停止',
+      },
+
+      createDialog: {
+        title: '创建 MCP 服务器',
+        subtitle: '创建一个新的 MCP 服务器来暴露你的工具。',
+        name: '名称',
+        namePlaceholder: 'my-mcp-server',
+        descriptionLabel: '描述',
+        descriptionPlaceholder: '描述你的 MCP 服务器...',
+      },
+
+      deleteDialog: {
+        title: '删除服务器',
+        description: '确定要删除此 MCP 服务器吗？此操作无法撤销。',
+      },
+
+      configTabs: {
+        basic: '基本信息',
+        tools: '工具选择',
+        advanced: '高级配置',
+        access: '访问控制',
+      },
+
+      basicInfo: {
+        title: '基本信息',
+        subtitle: '配置 MCP 服务器的基本属性。',
+        name: '名称',
+        namePlaceholder: 'my-mcp-server',
+        descriptionLabel: '描述',
+        descriptionPlaceholder: '描述你的 MCP 服务器...',
+        endpoint: '端点',
+        apiKey: 'API 密钥',
+      },
+
+      toolsTab: {
+        title: '工具选择',
+        description: '选择要通过此 MCP 服务器暴露的工具。',
+      },
+
+      advancedTab: {
+        title: '高级配置',
+        description: '配置性能和行为设置。',
+      },
+
+      accessTab: {
+        title: '访问控制',
+        description: '配置安全和访问限制。',
+      },
+
+      toolSelector: {
+        available: '可用工具',
+        selected: '已选工具',
+        searchPlaceholder: '搜索工具...',
+        selectAll: '全选',
+        noResults: '没有匹配的工具',
+        allSelected: '所有工具已选择',
+        noSelected: '未选择工具',
+        moveAllRight: '全部移到右边',
+        moveRight: '移到右边',
+        moveLeft: '移到左边',
+        moveAllLeft: '全部移到左边',
+      },
+
+      config: {
+        timeout: '超时时间（秒）',
+        timeoutHint: '每次工具调用的最大执行时间',
+        rateLimit: '速率限制（请求/分钟）',
+        rateLimitHint: '每分钟允许的最大请求数',
+        logLevel: '日志级别',
+        logLevelHint: '最低记录的日志级别',
+        logLevels: {
+          debug: '调试',
+          info: '信息',
+          warn: '警告',
+          error: '错误',
+        },
+        enableCache: '启用缓存',
+        enableCacheHint: '为重复查询缓存工具响应',
+        cacheExpiration: '缓存过期时间（毫秒）',
+        cacheExpirationHint: '缓存响应的保留时间（默认：5 分钟）',
+      },
+
+      accessControl: {
+        apiKeyRequired: '需要 API 密钥',
+        apiKeyRequiredHint: '客户端必须提供有效的 API 密钥才能访问此服务器',
+        allowedOrigins: '允许的来源（CORS）',
+        allowedOriginsHint: '允许跨域请求的来源列表。留空允许所有。',
+        originPlaceholder: 'https://example.com',
+        ipWhitelist: 'IP 白名单',
+        ipWhitelistHint: '只允许来自这些 IP 地址的请求。留空允许所有。',
+        ipPlaceholder: '192.168.1.1 或 10.0.0.0/24',
+      },
+
+      actions: {
+        test: '测试',
+        publish: '发布',
+      },
+
+      test: {
+        success: '测试通过',
+        failed: '测试失败',
+      },
+
+      configCopy: {
+        title: 'MCP 配置',
+        description: '复制此配置以在你的 MCP 客户端中使用。',
+        usageTitle: '使用方法：',
+        step1: '复制下面的配置',
+        step2: '将其添加到你的 MCP 客户端配置文件（如 claude_desktop_config.json）',
+        step3: '重启你的 MCP 客户端以应用更改',
+        copy: '复制',
+        copied: '已复制！',
+        copyFailed: '复制失败',
+        loadFailed: '加载配置失败',
+        serverName: '服务器',
+        endpoint: '端点',
+      },
+
+      monitoring: {
+        title: '监控仪表盘',
+        noData: '暂无监控数据',
+        totalCalls: '总调用次数',
+        today: '今日',
+        successRate: '成功率',
+        excellent: '优秀',
+        good: '良好',
+        needsAttention: '需要关注',
+        avgResponseTime: '平均响应时间',
+        fast: '快速',
+        normal: '正常',
+        slow: '缓慢',
+        topTool: '最常用工具',
+        calls: '次调用',
+        callTrend: '调用趋势',
+        callTrendDesc: '每日调用量变化',
+        successCalls: '成功',
+        errorCalls: '错误',
+        topTools: '热门工具',
+        topToolsDesc: '最常被调用的工具',
+        responseTimeDistribution: '响应时间分布',
+        recentCalls: '最近调用',
+        recentCallsDesc: '最近的工具调用记录',
+        time: '时间',
+        tool: '工具',
+        status: '状态',
+        responseTime: '响应时间',
+        noLogs: '暂无调用记录',
+        noChartData: '暂无数据',
+        autoRefreshOn: '自动刷新开启',
+        autoRefreshOff: '自动刷新关闭',
+        configure: '配置',
+        notPublished: '服务器未发布',
+        notPublishedDesc: '发布服务器后可查看监控数据。',
+        goToConfigure: '前往配置',
       },
     },
 

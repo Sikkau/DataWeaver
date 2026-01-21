@@ -80,20 +80,4 @@ func (Tool) TableName() string {
 	return "tools"
 }
 
-type MCPServer struct {
-	BaseModel
-	UserID      uint   `gorm:"index;not null" json:"user_id"`
-	Name        string `gorm:"size:100;not null" json:"name"`
-	Description string `gorm:"size:500" json:"description"`
-	Port        int    `gorm:"not null" json:"port"`
-	Status      string `gorm:"size:20;default:'stopped'" json:"status"` // running, stopped
-	Config      string `gorm:"type:text" json:"config"`                 // JSON config
-	IsActive    bool   `gorm:"default:true" json:"is_active"`
-
-	User  User   `gorm:"foreignKey:UserID" json:"-"`
-	Tools []Tool `gorm:"many2many:mcp_server_tools" json:"-"`
-}
-
-func (MCPServer) TableName() string {
-	return "mcp_servers"
-}
+// MCPServer is deprecated, use McpServer in mcp_server.go instead

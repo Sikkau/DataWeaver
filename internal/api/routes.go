@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -9,6 +10,8 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/yourusername/dataweaver/internal/api/auth"
 	"github.com/yourusername/dataweaver/internal/api/datasource"
+	"github.com/yourusername/dataweaver/internal/api/mcp"
+	"github.com/yourusername/dataweaver/internal/api/mcpserver"
 	"github.com/yourusername/dataweaver/internal/api/query"
 	"github.com/yourusername/dataweaver/internal/api/tool"
 	"github.com/yourusername/dataweaver/internal/database"
@@ -34,27 +37,45 @@ func SetupRouter(mode string) *gin.Engine {
 	// Swagger documentation
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	// Get base URL from environment or use default
+	baseURL := os.Getenv("BASE_URL")
+	if baseURL == "" {
+		baseURL = "http://localhost:8080"
+	}
+
+	// Initialize repositories
+	userRepo := repository.NewUserRepository(database.DB)
+	dsRepo := repository.NewDataSourceRepository(database.DB)
+	queryRepo := repository.NewQueryRepository(database.DB)
+	toolRepo := repository.NewToolRepository(database.DB)
+	mcpRepo := repository.NewMcpServerRepository(database.DB)
+
+	// Initialize services
+	authSvc := service.NewAuthService(userRepo)
+	dsSvc := service.NewDataSourceService(dsRepo)
+	querySvc := service.NewQueryService(queryRepo, dsRepo)
+	toolSvc := service.NewToolService(toolRepo, queryRepo, dsRepo)
+	mcpSvc := service.NewMcpServerService(mcpRepo, toolRepo, queryRepo, dsRepo)
+
+	// Initialize handlers
+	authHandler := auth.NewHandler(authSvc)
+	dsHandler := datasource.NewHandler(dsSvc)
+	queryHandler := query.NewHandler(querySvc)
+	toolHandler := tool.NewHandler(toolSvc)
+	mcpServerHandler := mcpserver.NewHandler(mcpSvc, baseURL)
+	mcpRuntimeHandler := mcp.NewRuntimeHandler(mcpSvc)
+
+	// MCP Runtime routes (no authentication - uses API key)
+	mcpRuntime := r.Group("/mcp")
+	{
+		mcpRuntime.POST("/:serverId", mcpRuntimeHandler.HandleMcpRequest)
+		mcpRuntime.GET("/:serverId/sse", mcpRuntimeHandler.HandleMcpSSE)
+		mcpRuntime.GET("/:serverId/health", mcpRuntimeHandler.HandleHealthCheck)
+	}
+
 	// API v1 routes
 	v1 := r.Group("/api/v1")
 	{
-		// Initialize repositories
-		userRepo := repository.NewUserRepository(database.DB)
-		dsRepo := repository.NewDataSourceRepository(database.DB)
-		queryRepo := repository.NewQueryRepository(database.DB)
-		toolRepo := repository.NewToolRepository(database.DB)
-
-		// Initialize services
-		authSvc := service.NewAuthService(userRepo)
-		dsSvc := service.NewDataSourceService(dsRepo)
-		querySvc := service.NewQueryService(queryRepo, dsRepo)
-		toolSvc := service.NewToolService(toolRepo, queryRepo, dsRepo)
-
-		// Initialize handlers
-		authHandler := auth.NewHandler(authSvc)
-		dsHandler := datasource.NewHandler(dsSvc)
-		queryHandler := query.NewHandler(querySvc)
-		toolHandler := tool.NewHandler(toolSvc)
-
 		// Public routes (no authentication required)
 		public := v1.Group("")
 		{
@@ -75,7 +96,6 @@ func SetupRouter(mode string) *gin.Engine {
 			}
 
 			// Data source routes
-
 			datasources := protected.Group("/datasources")
 			{
 				datasources.GET("", dsHandler.List)
@@ -119,15 +139,18 @@ func SetupRouter(mode string) *gin.Engine {
 			}
 
 			// MCP Server routes
-			mcpserver := protected.Group("/mcp-servers")
+			mcpServers := protected.Group("/mcp-servers")
 			{
-				mcpserver.GET("", placeholder("list mcp servers"))
-				mcpserver.POST("", placeholder("create mcp server"))
-				mcpserver.GET("/:id", placeholder("get mcp server"))
-				mcpserver.PUT("/:id", placeholder("update mcp server"))
-				mcpserver.DELETE("/:id", placeholder("delete mcp server"))
-				mcpserver.POST("/:id/start", placeholder("start mcp server"))
-				mcpserver.POST("/:id/stop", placeholder("stop mcp server"))
+				mcpServers.GET("", mcpServerHandler.List)
+				mcpServers.POST("", mcpServerHandler.Create)
+				mcpServers.GET("/:id", mcpServerHandler.Get)
+				mcpServers.PUT("/:id", mcpServerHandler.Update)
+				mcpServers.DELETE("/:id", mcpServerHandler.Delete)
+				mcpServers.POST("/:id/publish", mcpServerHandler.Publish)
+				mcpServers.POST("/:id/unpublish", mcpServerHandler.Unpublish)
+				mcpServers.GET("/:id/config", mcpServerHandler.GetConfig)
+				mcpServers.GET("/:id/logs", mcpServerHandler.GetLogs)
+				mcpServers.GET("/:id/statistics", mcpServerHandler.GetStatistics)
 			}
 		}
 	}
@@ -139,7 +162,7 @@ func corsMiddleware() gin.HandlerFunc {
 	config := cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With", "X-API-Key"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           86400,

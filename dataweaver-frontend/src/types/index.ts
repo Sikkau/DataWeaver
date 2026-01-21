@@ -236,3 +236,159 @@ export interface ToolTestApiResponse {
   data?: Record<string, unknown>[]
   columns?: string[]
 }
+
+// MCP Server types
+export type McpServerStatus = 'draft' | 'published' | 'stopped' | 'error'
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error'
+
+export interface McpServerConfig {
+  timeout: number // seconds
+  rateLimit: number // requests per minute
+  logLevel: LogLevel
+  enableCache: boolean
+  cacheExpirationMs?: number
+}
+
+export interface McpServerAccessControl {
+  apiKeyRequired: boolean
+  allowedOrigins: string[]
+  ipWhitelist: string[]
+}
+
+export interface McpServer extends BaseEntity {
+  name: string
+  description: string
+  version: string
+  status: McpServerStatus
+  endpoint?: string
+  apiKey?: string
+  toolIds: string[]
+  config: McpServerConfig
+  accessControl: McpServerAccessControl
+  publishedAt?: string
+  tools?: Tool[]
+}
+
+export interface McpServerFormData {
+  name: string
+  description: string
+  toolIds: string[]
+  config: McpServerConfig
+  accessControl: McpServerAccessControl
+}
+
+// MCP Server Statistics
+export interface McpServerStats {
+  totalCalls: number
+  successRate: number
+  averageResponseTime: number
+  callsToday: number
+  callsTrend: CallTrendData[]
+  topTools: TopToolData[]
+  responseTimeDistribution: ResponseTimeData[]
+}
+
+export interface CallTrendData {
+  date: string
+  calls: number
+  success: number
+  errors: number
+}
+
+export interface TopToolData {
+  toolName: string
+  calls: number
+  avgTime: number
+}
+
+export interface ResponseTimeData {
+  range: string
+  count: number
+  [key: string]: string | number
+}
+
+export interface McpServerCallLog {
+  id: string
+  timestamp: string
+  toolName: string
+  status: 'success' | 'error'
+  responseTime: number
+  parameters?: Record<string, unknown>
+  errorMessage?: string
+}
+
+// Backend API response formats for MCP Server
+export interface McpServerApiResponse {
+  id: string
+  user_id: number
+  name: string
+  description: string
+  version: string
+  status: string
+  endpoint?: string
+  api_key?: string
+  tool_ids: string[]
+  config: {
+    timeout: number
+    rate_limit: number
+    log_level: string
+    enable_cache: boolean
+    cache_expiration_ms?: number
+  }
+  access_control: {
+    api_key_required: boolean
+    allowed_origins: string[]
+    ip_whitelist: string[]
+  }
+  published_at?: string
+  created_at: string
+  updated_at: string
+  tools?: ToolApiResponse[]
+}
+
+export interface McpServerStatsApiResponse {
+  total_calls: number
+  success_rate: number
+  average_response_time: number
+  calls_today: number
+  calls_trend: {
+    date: string
+    calls: number
+    success: number
+    errors: number
+  }[]
+  top_tools: {
+    tool_name: string
+    calls: number
+    avg_time: number
+  }[]
+  response_time_distribution: {
+    range: string
+    count: number
+  }[]
+}
+
+export interface McpServerCallLogApiResponse {
+  id: string
+  timestamp: string
+  tool_name: string
+  status: string
+  response_time: number
+  parameters?: Record<string, unknown>
+  error_message?: string
+}
+
+// MCP Config Export format
+export interface McpConfigExport {
+  mcpServers: {
+    [key: string]: {
+      command: string
+      args: string[]
+      env: {
+        DATAWEAVER_ENDPOINT: string
+        DATAWEAVER_API_KEY: string
+        [key: string]: string
+      }
+    }
+  }
+}

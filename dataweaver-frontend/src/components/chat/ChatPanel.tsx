@@ -21,7 +21,7 @@ import {
 import { Trash2, Settings, Server, Unplug } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useMcpServers, useMcpServer } from '@/hooks/useMcpServers'
-import { useTestTool } from '@/hooks/useTools'
+import { useTools, useTestTool } from '@/hooks/useTools'
 import type { Tool } from '@/types'
 
 interface ChatPanelProps {
@@ -50,15 +50,17 @@ export function ChatPanel({ className, isFullScreen = false }: ChatPanelProps) {
 
   const { provider, apiKey, baseUrl, model, isValidated } = useModelStore()
 
-  // Fetch MCP servers
+  // Fetch MCP servers and tools
   const { data: mcpServers } = useMcpServers()
   const { data: selectedServer } = useMcpServer(selectedMcpServerId || undefined)
+  const { data: allTools } = useTools()
 
-  // Get tools from selected server
+  // Get tools from selected server - use toolIds to filter from all tools
   const serverTools = useMemo(() => {
-    if (!selectedServer?.tools) return []
-    return selectedServer.tools.filter(tool => tool.status === 'active')
-  }, [selectedServer])
+    if (!selectedServer?.toolIds || !allTools) return []
+    const toolIdSet = new Set(selectedServer.toolIds)
+    return allTools.filter(tool => toolIdSet.has(tool.id) && tool.status === 'active')
+  }, [selectedServer, allTools])
 
   // Tool test mutation
   const testTool = useTestTool()

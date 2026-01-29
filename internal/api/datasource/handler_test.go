@@ -44,12 +44,12 @@ func (m *MockDataSourceService) Get(id string, userID uint) (*model.DataSourceRe
 	return args.Get(0).(*model.DataSourceResponse), args.Error(1)
 }
 
-func (m *MockDataSourceService) GetWithPassword(id string, userID uint) (*model.DataSourceV2, error) {
+func (m *MockDataSourceService) GetWithPassword(id string, userID uint) (*model.DataSource, error) {
 	args := m.Called(id, userID)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(*model.DataSourceV2), args.Error(1)
+	return args.Get(0).(*model.DataSource), args.Error(1)
 }
 
 func (m *MockDataSourceService) Update(id string, userID uint, req *model.UpdateDataSourceRequest) (*model.DataSourceResponse, error) {

@@ -15,17 +15,17 @@ var (
 
 // ToolRepository handles database operations for tools
 type ToolRepository interface {
-	Create(t *model.ToolV2) error
-	FindAll(userID uint, page, size int) ([]model.ToolV2, int64, error)
-	FindByID(id string) (*model.ToolV2, error)
-	FindByIDAndUserID(id string, userID uint) (*model.ToolV2, error)
-	FindByIDWithQuery(id string, userID uint) (*model.ToolV2, error)
-	FindByName(name string, userID uint) (*model.ToolV2, error)
-	Update(t *model.ToolV2) error
+	Create(t *model.Tool) error
+	FindAll(userID uint, page, size int) ([]model.Tool, int64, error)
+	FindByID(id string) (*model.Tool, error)
+	FindByIDAndUserID(id string, userID uint) (*model.Tool, error)
+	FindByIDWithQuery(id string, userID uint) (*model.Tool, error)
+	FindByName(name string, userID uint) (*model.Tool, error)
+	Update(t *model.Tool) error
 	Delete(id string, userID uint) error
-	Search(userID uint, keyword string, page, size int) ([]model.ToolV2, int64, error)
-	FindByQueryID(queryID string) ([]model.ToolV2, error)
-	FindByMcpServerID(mcpServerID string) ([]model.ToolV2, error)
+	Search(userID uint, keyword string, page, size int) ([]model.Tool, int64, error)
+	FindByQueryID(queryID string) ([]model.Tool, error)
+	FindByMcpServerID(mcpServerID string) ([]model.Tool, error)
 	CountByQueryID(queryID string) (int64, error)
 	IncrementVersion(id string, userID uint) error
 }
@@ -40,10 +40,10 @@ func NewToolRepository(db *gorm.DB) ToolRepository {
 }
 
 // Create creates a new tool
-func (r *toolRepository) Create(t *model.ToolV2) error {
+func (r *toolRepository) Create(t *model.Tool) error {
 	// Check if name already exists for this user
 	var count int64
-	if err := r.db.Model(&model.ToolV2{}).
+	if err := r.db.Model(&model.Tool{}).
 		Where("name = ? AND user_id = ?", t.Name, t.UserID).
 		Count(&count).Error; err != nil {
 		return fmt.Errorf("failed to check tool name: %w", err)
@@ -59,14 +59,14 @@ func (r *toolRepository) Create(t *model.ToolV2) error {
 }
 
 // FindAll returns all tools for a user with pagination
-func (r *toolRepository) FindAll(userID uint, page, size int) ([]model.ToolV2, int64, error) {
-	var tools []model.ToolV2
+func (r *toolRepository) FindAll(userID uint, page, size int) ([]model.Tool, int64, error) {
+	var tools []model.Tool
 	var total int64
 
 	offset := (page - 1) * size
 
 	// Count total records
-	if err := r.db.Model(&model.ToolV2{}).Where("user_id = ?", userID).Count(&total).Error; err != nil {
+	if err := r.db.Model(&model.Tool{}).Where("user_id = ?", userID).Count(&total).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to count tools: %w", err)
 	}
 
@@ -84,8 +84,8 @@ func (r *toolRepository) FindAll(userID uint, page, size int) ([]model.ToolV2, i
 }
 
 // FindByID finds a tool by ID
-func (r *toolRepository) FindByID(id string) (*model.ToolV2, error) {
-	var t model.ToolV2
+func (r *toolRepository) FindByID(id string) (*model.Tool, error) {
+	var t model.Tool
 	if err := r.db.Where("id = ?", id).First(&t).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrToolNotFound
@@ -96,8 +96,8 @@ func (r *toolRepository) FindByID(id string) (*model.ToolV2, error) {
 }
 
 // FindByIDAndUserID finds a tool by ID and user ID
-func (r *toolRepository) FindByIDAndUserID(id string, userID uint) (*model.ToolV2, error) {
-	var t model.ToolV2
+func (r *toolRepository) FindByIDAndUserID(id string, userID uint) (*model.Tool, error) {
+	var t model.Tool
 	if err := r.db.Where("id = ? AND user_id = ?", id, userID).First(&t).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrToolNotFound
@@ -108,8 +108,8 @@ func (r *toolRepository) FindByIDAndUserID(id string, userID uint) (*model.ToolV
 }
 
 // FindByIDWithQuery finds a tool by ID with Query preloaded
-func (r *toolRepository) FindByIDWithQuery(id string, userID uint) (*model.ToolV2, error) {
-	var t model.ToolV2
+func (r *toolRepository) FindByIDWithQuery(id string, userID uint) (*model.Tool, error) {
+	var t model.Tool
 	if err := r.db.Preload("Query").
 		Preload("Query.DataSource").
 		Where("id = ? AND user_id = ?", id, userID).
@@ -123,8 +123,8 @@ func (r *toolRepository) FindByIDWithQuery(id string, userID uint) (*model.ToolV
 }
 
 // FindByName finds a tool by name for a user
-func (r *toolRepository) FindByName(name string, userID uint) (*model.ToolV2, error) {
-	var t model.ToolV2
+func (r *toolRepository) FindByName(name string, userID uint) (*model.Tool, error) {
+	var t model.Tool
 	if err := r.db.Where("name = ? AND user_id = ?", name, userID).First(&t).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrToolNotFound
@@ -135,7 +135,7 @@ func (r *toolRepository) FindByName(name string, userID uint) (*model.ToolV2, er
 }
 
 // Update updates a tool
-func (r *toolRepository) Update(t *model.ToolV2) error {
+func (r *toolRepository) Update(t *model.Tool) error {
 	result := r.db.Save(t)
 	if result.Error != nil {
 		return fmt.Errorf("failed to update tool: %w", result.Error)
@@ -148,7 +148,7 @@ func (r *toolRepository) Update(t *model.ToolV2) error {
 
 // Delete soft-deletes a tool
 func (r *toolRepository) Delete(id string, userID uint) error {
-	result := r.db.Where("id = ? AND user_id = ?", id, userID).Delete(&model.ToolV2{})
+	result := r.db.Where("id = ? AND user_id = ?", id, userID).Delete(&model.Tool{})
 	if result.Error != nil {
 		return fmt.Errorf("failed to delete tool: %w", result.Error)
 	}
@@ -159,14 +159,14 @@ func (r *toolRepository) Delete(id string, userID uint) error {
 }
 
 // Search searches tools by keyword (name, display_name, or description)
-func (r *toolRepository) Search(userID uint, keyword string, page, size int) ([]model.ToolV2, int64, error) {
-	var tools []model.ToolV2
+func (r *toolRepository) Search(userID uint, keyword string, page, size int) ([]model.Tool, int64, error) {
+	var tools []model.Tool
 	var total int64
 
 	offset := (page - 1) * size
 	searchPattern := "%" + keyword + "%"
 
-	query := r.db.Model(&model.ToolV2{}).
+	query := r.db.Model(&model.Tool{}).
 		Where("user_id = ?", userID).
 		Where("name ILIKE ? OR display_name ILIKE ? OR description ILIKE ?", searchPattern, searchPattern, searchPattern)
 
@@ -190,8 +190,8 @@ func (r *toolRepository) Search(userID uint, keyword string, page, size int) ([]
 }
 
 // FindByQueryID finds all tools associated with a query
-func (r *toolRepository) FindByQueryID(queryID string) ([]model.ToolV2, error) {
-	var tools []model.ToolV2
+func (r *toolRepository) FindByQueryID(queryID string) ([]model.Tool, error) {
+	var tools []model.Tool
 	if err := r.db.Where("query_id = ?", queryID).Find(&tools).Error; err != nil {
 		return nil, fmt.Errorf("failed to find tools by query: %w", err)
 	}
@@ -199,8 +199,8 @@ func (r *toolRepository) FindByQueryID(queryID string) ([]model.ToolV2, error) {
 }
 
 // FindByMcpServerID finds all tools associated with an MCP server
-func (r *toolRepository) FindByMcpServerID(mcpServerID string) ([]model.ToolV2, error) {
-	var tools []model.ToolV2
+func (r *toolRepository) FindByMcpServerID(mcpServerID string) ([]model.Tool, error) {
+	var tools []model.Tool
 	if err := r.db.Where("mcp_server_id = ?", mcpServerID).Find(&tools).Error; err != nil {
 		return nil, fmt.Errorf("failed to find tools by mcp server: %w", err)
 	}
@@ -210,7 +210,7 @@ func (r *toolRepository) FindByMcpServerID(mcpServerID string) ([]model.ToolV2, 
 // CountByQueryID counts tools associated with a query
 func (r *toolRepository) CountByQueryID(queryID string) (int64, error) {
 	var count int64
-	if err := r.db.Model(&model.ToolV2{}).Where("query_id = ?", queryID).Count(&count).Error; err != nil {
+	if err := r.db.Model(&model.Tool{}).Where("query_id = ?", queryID).Count(&count).Error; err != nil {
 		return 0, fmt.Errorf("failed to count tools: %w", err)
 	}
 	return count, nil
@@ -218,7 +218,7 @@ func (r *toolRepository) CountByQueryID(queryID string) (int64, error) {
 
 // IncrementVersion increments the version of a tool
 func (r *toolRepository) IncrementVersion(id string, userID uint) error {
-	result := r.db.Model(&model.ToolV2{}).
+	result := r.db.Model(&model.Tool{}).
 		Where("id = ? AND user_id = ?", id, userID).
 		UpdateColumn("version", gorm.Expr("version + 1"))
 	if result.Error != nil {

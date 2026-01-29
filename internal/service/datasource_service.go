@@ -22,7 +22,7 @@ type DataSourceService interface {
 	Create(userID uint, req *model.CreateDataSourceRequest) (*model.DataSourceResponse, error)
 	List(userID uint, page, size int, keyword string) ([]model.DataSourceResponse, int64, error)
 	Get(id string, userID uint) (*model.DataSourceResponse, error)
-	GetWithPassword(id string, userID uint) (*model.DataSourceV2, error)
+	GetWithPassword(id string, userID uint) (*model.DataSource, error)
 	Update(id string, userID uint, req *model.UpdateDataSourceRequest) (*model.DataSourceResponse, error)
 	Delete(id string, userID uint) error
 	TestConnection(id string, userID uint) (*model.TestConnectionResult, error)
@@ -58,7 +58,7 @@ func (s *dataSourceService) Create(userID uint, req *model.CreateDataSourceReque
 		sslMode = "disable"
 	}
 
-	ds := &model.DataSourceV2{
+	ds := &model.DataSource{
 		UserID:      userID,
 		Name:        req.Name,
 		Description: req.Description,
@@ -89,7 +89,7 @@ func (s *dataSourceService) List(userID uint, page, size int, keyword string) ([
 		size = 20
 	}
 
-	var datasources []model.DataSourceV2
+	var datasources []model.DataSource
 	var total int64
 	var err error
 
@@ -121,7 +121,7 @@ func (s *dataSourceService) Get(id string, userID uint) (*model.DataSourceRespon
 }
 
 // GetWithPassword returns a datasource with decrypted password (for internal use)
-func (s *dataSourceService) GetWithPassword(id string, userID uint) (*model.DataSourceV2, error) {
+func (s *dataSourceService) GetWithPassword(id string, userID uint) (*model.DataSource, error) {
 	ds, err := s.repo.FindByIDAndUserID(id, userID)
 	if err != nil {
 		return nil, err

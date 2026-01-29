@@ -76,7 +76,7 @@ func (s *queryService) Create(userID uint, req *model.CreateQueryRequest) (*mode
 		params = s.extractParametersFromSQL(req.SQLTemplate)
 	}
 
-	query := &model.QueryV2{
+	query := &model.Query{
 		UserID:       userID,
 		Name:         req.Name,
 		Description:  req.Description,
@@ -109,7 +109,7 @@ func (s *queryService) List(userID uint, page, size int, keyword string) ([]mode
 		size = 20
 	}
 
-	var queries []model.QueryV2
+	var queries []model.Query
 	var total int64
 	var err error
 

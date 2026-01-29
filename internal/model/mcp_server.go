@@ -117,7 +117,7 @@ type McpServer struct {
 	DeletedAt   gorm.DeletedAt   `gorm:"index" json:"-"`
 
 	// Preloaded relationships
-	Tools []ToolV2 `gorm:"-" json:"tools,omitempty"`
+	Tools []Tool `gorm:"-" json:"tools,omitempty"`
 }
 
 func (McpServer) TableName() string {

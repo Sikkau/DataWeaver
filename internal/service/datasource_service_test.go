@@ -29,7 +29,7 @@ func TestDataSourceService_Create(t *testing.T) {
 		Password: "password",
 	}
 
-	mockRepo.On("Create", mock.AnythingOfType("*model.DataSourceV2")).Return(nil)
+	mockRepo.On("Create", mock.AnythingOfType("*model.DataSource")).Return(nil)
 
 	result, err := svc.Create(1, req)
 
@@ -70,7 +70,7 @@ func TestDataSourceService_List(t *testing.T) {
 	mockRepo := new(repository.MockDataSourceRepository)
 	svc := NewDataSourceService(mockRepo)
 
-	datasources := []model.DataSourceV2{
+	datasources := []model.DataSource{
 		{
 			ID:       "uuid-1",
 			UserID:   1,
@@ -112,7 +112,7 @@ func TestDataSourceService_List_WithSearch(t *testing.T) {
 	mockRepo := new(repository.MockDataSourceRepository)
 	svc := NewDataSourceService(mockRepo)
 
-	datasources := []model.DataSourceV2{
+	datasources := []model.DataSource{
 		{
 			ID:       "uuid-1",
 			UserID:   1,
@@ -142,7 +142,7 @@ func TestDataSourceService_Get(t *testing.T) {
 	mockRepo := new(repository.MockDataSourceRepository)
 	svc := NewDataSourceService(mockRepo)
 
-	ds := &model.DataSourceV2{
+	ds := &model.DataSource{
 		ID:       "uuid-1",
 		UserID:   1,
 		Name:     "Test DB",
@@ -185,7 +185,7 @@ func TestDataSourceService_Update(t *testing.T) {
 	mockRepo := new(repository.MockDataSourceRepository)
 	svc := NewDataSourceService(mockRepo)
 
-	ds := &model.DataSourceV2{
+	ds := &model.DataSource{
 		ID:       "uuid-1",
 		UserID:   1,
 		Name:     "Old Name",
@@ -204,7 +204,7 @@ func TestDataSourceService_Update(t *testing.T) {
 	}
 
 	mockRepo.On("FindByIDAndUserID", "uuid-1", uint(1)).Return(ds, nil)
-	mockRepo.On("Update", mock.AnythingOfType("*model.DataSourceV2")).Return(nil)
+	mockRepo.On("Update", mock.AnythingOfType("*model.DataSource")).Return(nil)
 
 	result, err := svc.Update("uuid-1", 1, req)
 

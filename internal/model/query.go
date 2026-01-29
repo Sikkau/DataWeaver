@@ -45,8 +45,8 @@ func (p *JSONParameters) Scan(value interface{}) error {
 	return json.Unmarshal(bytes, p)
 }
 
-// QueryV2 is the enhanced Query model with UUID primary key
-type QueryV2 struct {
+// Query is the main Query model with UUID primary key
+type Query struct {
 	ID           string         `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
 	UserID       uint           `gorm:"index;not null" json:"user_id"`
 	Name         string         `gorm:"size:100;not null" json:"name" binding:"required,min=1,max=100"`
@@ -59,12 +59,12 @@ type QueryV2 struct {
 	UpdatedAt    time.Time      `json:"updated_at"`
 	DeletedAt    gorm.DeletedAt `gorm:"index" json:"-"`
 
-	User       User         `gorm:"foreignKey:UserID" json:"-"`
-	DataSource DataSourceV2 `gorm:"foreignKey:DataSourceID" json:"data_source,omitempty"`
+	User       User       `gorm:"foreignKey:UserID" json:"-"`
+	DataSource DataSource `gorm:"foreignKey:DataSourceID" json:"data_source,omitempty"`
 }
 
-func (QueryV2) TableName() string {
-	return "queries_v2"
+func (Query) TableName() string {
+	return "queries"
 }
 
 // QueryParameter represents a parameter definition for a query
@@ -77,7 +77,7 @@ type QueryParameter struct {
 }
 
 // GetParameters returns the parameters slice
-func (q *QueryV2) GetParameters() ([]QueryParameter, error) {
+func (q *Query) GetParameters() ([]QueryParameter, error) {
 	if q.Parameters == nil {
 		return nil, nil
 	}
@@ -85,7 +85,7 @@ func (q *QueryV2) GetParameters() ([]QueryParameter, error) {
 }
 
 // SetParameters sets the parameters
-func (q *QueryV2) SetParameters(params []QueryParameter) error {
+func (q *Query) SetParameters(params []QueryParameter) error {
 	q.Parameters = JSONParameters(params)
 	return nil
 }
@@ -131,8 +131,8 @@ type DataSourceInfo struct {
 	Type string `json:"type"`
 }
 
-// ToResponse converts QueryV2 to QueryResponse
-func (q *QueryV2) ToResponse() *QueryResponse {
+// ToResponse converts Query to QueryResponse
+func (q *Query) ToResponse() *QueryResponse {
 	params, _ := q.GetParameters()
 	if params == nil {
 		params = []QueryParameter{}
@@ -200,7 +200,7 @@ type QueryExecution struct {
 	ErrorMessage    string    `gorm:"type:text" json:"error_message,omitempty"`
 	CreatedAt       time.Time `json:"created_at"`
 
-	Query QueryV2 `gorm:"foreignKey:QueryID" json:"query,omitempty"`
+	Query Query `gorm:"foreignKey:QueryID" json:"query,omitempty"`
 }
 
 func (QueryExecution) TableName() string {

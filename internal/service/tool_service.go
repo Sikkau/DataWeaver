@@ -72,7 +72,7 @@ func (s *toolService) Create(userID uint, req *model.CreateToolRequest) (*model.
 	}
 
 	// Create tool
-	tool := &model.ToolV2{
+	tool := &model.Tool{
 		UserID:       userID,
 		Name:         req.Name,
 		DisplayName:  req.DisplayName,
@@ -153,7 +153,7 @@ func (s *toolService) CreateFromQuery(userID uint, queryID string, req *model.Cr
 	outputSchema := inferOutputSchema(query)
 
 	// Create tool
-	tool := &model.ToolV2{
+	tool := &model.Tool{
 		UserID:       userID,
 		Name:         toolName,
 		DisplayName:  displayName,
@@ -187,7 +187,7 @@ func (s *toolService) List(userID uint, page, size int, keyword string) ([]model
 		size = 20
 	}
 
-	var tools []model.ToolV2
+	var tools []model.Tool
 	var total int64
 	var err error
 
@@ -476,7 +476,7 @@ func toSnakeCase(s string) string {
 }
 
 // generateToolDescription generates a description from query
-func generateToolDescription(query *model.QueryV2) string {
+func generateToolDescription(query *model.Query) string {
 	params, _ := query.GetParameters()
 
 	var sb strings.Builder
@@ -499,7 +499,7 @@ func generateToolDescription(query *model.QueryV2) string {
 }
 
 // generateToolDescriptionFromTool generates a description from tool and its query
-func generateToolDescriptionFromTool(tool *model.ToolV2) string {
+func generateToolDescriptionFromTool(tool *model.Tool) string {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("Tool '%s' executes database query", tool.DisplayName))
 
@@ -523,7 +523,7 @@ func generateToolDescriptionFromTool(tool *model.ToolV2) string {
 }
 
 // inferOutputSchema infers output schema from query (basic implementation)
-func inferOutputSchema(query *model.QueryV2) map[string]interface{} {
+func inferOutputSchema(query *model.Query) map[string]interface{} {
 	// Basic output schema - in a real implementation, this could analyze
 	// the SQL to determine column types or execute a test query
 	return map[string]interface{}{

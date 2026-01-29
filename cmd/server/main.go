@@ -83,10 +83,10 @@ func main() {
 	// Auto migrate models
 	if err := database.AutoMigrate(
 		&model.User{},
-		&model.DataSourceV2{},
-		&model.QueryV2{},
+		&model.DataSource{},
+		&model.Query{},
 		&model.QueryExecution{},
-		&model.ToolV2{},
+		&model.Tool{},
 		&model.McpServer{},
 		&model.McpLog{},
 	); err != nil {

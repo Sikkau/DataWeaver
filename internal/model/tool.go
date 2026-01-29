@@ -81,8 +81,8 @@ func (s *OutputSchema) Scan(value interface{}) error {
 	return json.Unmarshal(bytes, s)
 }
 
-// ToolV2 is the enhanced Tool model with UUID primary key
-type ToolV2 struct {
+// Tool is the main Tool model with UUID primary key
+type Tool struct {
 	ID           string         `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
 	UserID       uint           `gorm:"index;not null" json:"user_id"`
 	Name         string         `gorm:"size:100;not null" json:"name" binding:"required"`
@@ -98,11 +98,11 @@ type ToolV2 struct {
 	UpdatedAt    time.Time      `json:"updated_at"`
 	DeletedAt    gorm.DeletedAt `gorm:"index" json:"-"`
 
-	Query QueryV2 `gorm:"foreignKey:QueryID" json:"query,omitempty"`
+	Query Query `gorm:"foreignKey:QueryID" json:"query,omitempty"`
 }
 
-func (ToolV2) TableName() string {
-	return "tools_v2"
+func (Tool) TableName() string {
+	return "tools"
 }
 
 // ToolParameter represents a parameter definition for a tool
@@ -168,8 +168,8 @@ type QueryInfo struct {
 	Description string `json:"description"`
 }
 
-// ToResponse converts ToolV2 to ToolResponse
-func (t *ToolV2) ToResponse() *ToolResponse {
+// ToResponse converts Tool to ToolResponse
+func (t *Tool) ToResponse() *ToolResponse {
 	params := []ToolParameter(t.Parameters)
 	if params == nil {
 		params = []ToolParameter{}
@@ -230,8 +230,8 @@ type MCPToolDefinition struct {
 	InputSchema map[string]interface{} `json:"input_schema"`
 }
 
-// ToMCPDefinition converts ToolV2 to MCP tool definition format
-func (t *ToolV2) ToMCPDefinition() *MCPToolDefinition {
+// ToMCPDefinition converts Tool to MCP tool definition format
+func (t *Tool) ToMCPDefinition() *MCPToolDefinition {
 	// Build input schema from parameters
 	properties := make(map[string]interface{})
 	required := make([]string, 0)

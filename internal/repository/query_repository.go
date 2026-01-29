@@ -14,15 +14,15 @@ var (
 
 // QueryRepository handles database operations for queries
 type QueryRepository interface {
-	Create(q *model.QueryV2) error
-	FindAll(userID uint, page, size int) ([]model.QueryV2, int64, error)
-	FindByID(id string) (*model.QueryV2, error)
-	FindByIDAndUserID(id string, userID uint) (*model.QueryV2, error)
-	FindByIDWithDataSource(id string, userID uint) (*model.QueryV2, error)
-	Update(q *model.QueryV2) error
+	Create(q *model.Query) error
+	FindAll(userID uint, page, size int) ([]model.Query, int64, error)
+	FindByID(id string) (*model.Query, error)
+	FindByIDAndUserID(id string, userID uint) (*model.Query, error)
+	FindByIDWithDataSource(id string, userID uint) (*model.Query, error)
+	Update(q *model.Query) error
 	Delete(id string, userID uint) error
-	Search(userID uint, keyword string, page, size int) ([]model.QueryV2, int64, error)
-	FindByDataSourceID(dataSourceID string) ([]model.QueryV2, error)
+	Search(userID uint, keyword string, page, size int) ([]model.Query, int64, error)
+	FindByDataSourceID(dataSourceID string) ([]model.Query, error)
 	CountByDataSourceID(dataSourceID string) (int64, error)
 	// Execution history
 	CreateExecution(exec *model.QueryExecution) error
@@ -40,7 +40,7 @@ func NewQueryRepository(db *gorm.DB) QueryRepository {
 }
 
 // Create creates a new query
-func (r *queryRepository) Create(q *model.QueryV2) error {
+func (r *queryRepository) Create(q *model.Query) error {
 	if err := r.db.Create(q).Error; err != nil {
 		return fmt.Errorf("failed to create query: %w", err)
 	}
@@ -48,14 +48,14 @@ func (r *queryRepository) Create(q *model.QueryV2) error {
 }
 
 // FindAll returns all queries for a user with pagination
-func (r *queryRepository) FindAll(userID uint, page, size int) ([]model.QueryV2, int64, error) {
-	var queries []model.QueryV2
+func (r *queryRepository) FindAll(userID uint, page, size int) ([]model.Query, int64, error) {
+	var queries []model.Query
 	var total int64
 
 	offset := (page - 1) * size
 
 	// Count total records
-	if err := r.db.Model(&model.QueryV2{}).Where("user_id = ?", userID).Count(&total).Error; err != nil {
+	if err := r.db.Model(&model.Query{}).Where("user_id = ?", userID).Count(&total).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to count queries: %w", err)
 	}
 
@@ -73,8 +73,8 @@ func (r *queryRepository) FindAll(userID uint, page, size int) ([]model.QueryV2,
 }
 
 // FindByID finds a query by ID
-func (r *queryRepository) FindByID(id string) (*model.QueryV2, error) {
-	var q model.QueryV2
+func (r *queryRepository) FindByID(id string) (*model.Query, error) {
+	var q model.Query
 	if err := r.db.Where("id = ?", id).First(&q).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrQueryNotFound
@@ -85,8 +85,8 @@ func (r *queryRepository) FindByID(id string) (*model.QueryV2, error) {
 }
 
 // FindByIDAndUserID finds a query by ID and user ID
-func (r *queryRepository) FindByIDAndUserID(id string, userID uint) (*model.QueryV2, error) {
-	var q model.QueryV2
+func (r *queryRepository) FindByIDAndUserID(id string, userID uint) (*model.Query, error) {
+	var q model.Query
 	if err := r.db.Where("id = ? AND user_id = ?", id, userID).First(&q).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrQueryNotFound
@@ -97,8 +97,8 @@ func (r *queryRepository) FindByIDAndUserID(id string, userID uint) (*model.Quer
 }
 
 // FindByIDWithDataSource finds a query by ID with DataSource preloaded
-func (r *queryRepository) FindByIDWithDataSource(id string, userID uint) (*model.QueryV2, error) {
-	var q model.QueryV2
+func (r *queryRepository) FindByIDWithDataSource(id string, userID uint) (*model.Query, error) {
+	var q model.Query
 	if err := r.db.Preload("DataSource").
 		Where("id = ? AND user_id = ?", id, userID).
 		First(&q).Error; err != nil {
@@ -111,7 +111,7 @@ func (r *queryRepository) FindByIDWithDataSource(id string, userID uint) (*model
 }
 
 // Update updates a query
-func (r *queryRepository) Update(q *model.QueryV2) error {
+func (r *queryRepository) Update(q *model.Query) error {
 	result := r.db.Save(q)
 	if result.Error != nil {
 		return fmt.Errorf("failed to update query: %w", result.Error)
@@ -124,7 +124,7 @@ func (r *queryRepository) Update(q *model.QueryV2) error {
 
 // Delete soft-deletes a query
 func (r *queryRepository) Delete(id string, userID uint) error {
-	result := r.db.Where("id = ? AND user_id = ?", id, userID).Delete(&model.QueryV2{})
+	result := r.db.Where("id = ? AND user_id = ?", id, userID).Delete(&model.Query{})
 	if result.Error != nil {
 		return fmt.Errorf("failed to delete query: %w", result.Error)
 	}
@@ -135,14 +135,14 @@ func (r *queryRepository) Delete(id string, userID uint) error {
 }
 
 // Search searches queries by keyword (name or description)
-func (r *queryRepository) Search(userID uint, keyword string, page, size int) ([]model.QueryV2, int64, error) {
-	var queries []model.QueryV2
+func (r *queryRepository) Search(userID uint, keyword string, page, size int) ([]model.Query, int64, error) {
+	var queries []model.Query
 	var total int64
 
 	offset := (page - 1) * size
 	searchPattern := "%" + keyword + "%"
 
-	query := r.db.Model(&model.QueryV2{}).
+	query := r.db.Model(&model.Query{}).
 		Where("user_id = ?", userID).
 		Where("name ILIKE ? OR description ILIKE ?", searchPattern, searchPattern)
 
@@ -166,8 +166,8 @@ func (r *queryRepository) Search(userID uint, keyword string, page, size int) ([
 }
 
 // FindByDataSourceID finds all queries associated with a data source
-func (r *queryRepository) FindByDataSourceID(dataSourceID string) ([]model.QueryV2, error) {
-	var queries []model.QueryV2
+func (r *queryRepository) FindByDataSourceID(dataSourceID string) ([]model.Query, error) {
+	var queries []model.Query
 	if err := r.db.Where("data_source_id = ?", dataSourceID).Find(&queries).Error; err != nil {
 		return nil, fmt.Errorf("failed to find queries by data source: %w", err)
 	}
@@ -177,7 +177,7 @@ func (r *queryRepository) FindByDataSourceID(dataSourceID string) ([]model.Query
 // CountByDataSourceID counts queries associated with a data source
 func (r *queryRepository) CountByDataSourceID(dataSourceID string) (int64, error) {
 	var count int64
-	if err := r.db.Model(&model.QueryV2{}).Where("data_source_id = ?", dataSourceID).Count(&count).Error; err != nil {
+	if err := r.db.Model(&model.Query{}).Where("data_source_id = ?", dataSourceID).Count(&count).Error; err != nil {
 		return 0, fmt.Errorf("failed to count queries: %w", err)
 	}
 	return count, nil

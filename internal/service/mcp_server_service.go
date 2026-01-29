@@ -46,7 +46,7 @@ type McpServerService interface {
 
 	// Runtime operations
 	GetServerByApiKey(apiKey string) (*model.McpServer, error)
-	GetServerTools(serverID string) ([]model.ToolV2, error)
+	GetServerTools(serverID string) ([]model.Tool, error)
 	ExecuteTool(serverID, toolName string, params map[string]interface{}) (*model.McpToolCallResult, *model.McpLog, error)
 }
 
@@ -487,13 +487,13 @@ func (s *mcpServerService) GetServerByApiKey(apiKey string) (*model.McpServer, e
 }
 
 // GetServerTools returns all tools for a server
-func (s *mcpServerService) GetServerTools(serverID string) ([]model.ToolV2, error) {
+func (s *mcpServerService) GetServerTools(serverID string) ([]model.Tool, error) {
 	server, err := s.mcpRepo.FindByID(serverID)
 	if err != nil {
 		return nil, err
 	}
 
-	tools := make([]model.ToolV2, 0, len(server.ToolIDs))
+	tools := make([]model.Tool, 0, len(server.ToolIDs))
 	for _, toolID := range server.ToolIDs {
 		tool, err := s.toolRepo.FindByID(toolID)
 		if err != nil {
@@ -513,7 +513,7 @@ func (s *mcpServerService) ExecuteTool(serverID, toolName string, params map[str
 	}
 
 	// Find the tool by name
-	var tool *model.ToolV2
+	var tool *model.Tool
 	for _, toolID := range server.ToolIDs {
 		t, err := s.toolRepo.FindByID(toolID)
 		if err != nil {
@@ -638,8 +638,8 @@ func (s *mcpServerService) ExecuteTool(serverID, toolName string, params map[str
 // Helper functions
 
 // loadTools loads tools by IDs for a user
-func (s *mcpServerService) loadTools(toolIDs []string, userID uint) []model.ToolV2 {
-	tools := make([]model.ToolV2, 0, len(toolIDs))
+func (s *mcpServerService) loadTools(toolIDs []string, userID uint) []model.Tool {
+	tools := make([]model.Tool, 0, len(toolIDs))
 	for _, toolID := range toolIDs {
 		tool, err := s.toolRepo.FindByIDAndUserID(toolID, userID)
 		if err != nil {

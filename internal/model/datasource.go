@@ -16,8 +16,8 @@ const (
 	DataSourceTypeOracle     DataSourceType = "oracle"
 )
 
-// DataSourceV2 is the enhanced DataSource model with UUID primary key
-type DataSourceV2 struct {
+// DataSource is the main DataSource model with UUID primary key
+type DataSource struct {
 	ID          string         `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
 	UserID      uint           `gorm:"index;not null" json:"user_id"`
 	Name        string         `gorm:"size:100;not null" json:"name" binding:"required,min=1,max=100"`
@@ -37,8 +37,8 @@ type DataSourceV2 struct {
 	User User `gorm:"foreignKey:UserID" json:"-"`
 }
 
-func (DataSourceV2) TableName() string {
-	return "data_sources_v2"
+func (DataSource) TableName() string {
+	return "data_sources"
 }
 
 // CreateDataSourceRequest represents the request body for creating a datasource
@@ -85,8 +85,8 @@ type DataSourceResponse struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-// ToResponse converts DataSourceV2 to DataSourceResponse
-func (ds *DataSourceV2) ToResponse() *DataSourceResponse {
+// ToResponse converts DataSource to DataSourceResponse
+func (ds *DataSource) ToResponse() *DataSourceResponse {
 	return &DataSourceResponse{
 		ID:          ds.ID,
 		UserID:      ds.UserID,

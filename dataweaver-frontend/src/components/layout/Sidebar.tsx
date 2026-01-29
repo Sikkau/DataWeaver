@@ -9,6 +9,7 @@ import {
   Server,
   Settings,
   Home,
+  MessageCircle,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react'
@@ -31,6 +32,7 @@ export function Sidebar() {
     { icon: Search, label: t.nav.queries, path: '/queries' },
     { icon: Wrench, label: t.nav.tools, path: '/tools' },
     { icon: Server, label: t.nav.mcpServers, path: '/mcp-servers' },
+    { icon: MessageCircle, label: t.nav.chat || 'Chat', path: '/chat' },
     { icon: Settings, label: t.nav.settings, path: '/settings' },
   ]
 

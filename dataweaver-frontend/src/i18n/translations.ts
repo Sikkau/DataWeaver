@@ -42,6 +42,7 @@ export const translations = {
       queries: 'Queries',
       tools: 'Tools',
       mcpServers: 'MCP Servers',
+      chat: 'Chat',
       settings: 'Settings',
     },
 
@@ -705,6 +706,19 @@ export const translations = {
       },
     },
 
+    // Chat
+    chat: {
+      title: 'Chat',
+      emptyState: 'Start a conversation with AI',
+      inputPlaceholder: 'Type your message...',
+      configureModel: 'Please configure AI model in Settings',
+      configureModelShort: 'Configure',
+      clearChat: 'Clear chat',
+      errorMessage: 'Sorry, an error occurred. Please try again.',
+      thinking: 'Thinking',
+      thinkingInProgress: 'Thinking...',
+    },
+
     // Error Pages
     errors: {
       notFound: {
@@ -765,6 +779,7 @@ export const translations = {
       queries: '查询',
       tools: '工具',
       mcpServers: 'MCP 服务器',
+      chat: '聊天',
       settings: '设置',
     },
 
@@ -1426,6 +1441,19 @@ export const translations = {
         validateError: '验证失败，请检查 API 密钥和基础 URL。',
         saveConfig: '保存配置',
       },
+    },
+
+    // Chat
+    chat: {
+      title: '聊天',
+      emptyState: '开始与 AI 对话',
+      inputPlaceholder: '输入您的消息...',
+      configureModel: '请在设置中配置 AI 模型',
+      configureModelShort: '配置',
+      clearChat: '清空聊天',
+      errorMessage: '抱歉，发生了错误。请重试。',
+      thinking: '思考过程',
+      thinkingInProgress: '思考中...',
     },
 
     // Error Pages

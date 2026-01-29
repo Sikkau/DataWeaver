@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
 import { Header } from './Header'
+import { ChatWidget } from '@/components/chat'
 import { useAppStore } from '@/stores/useAppStore'
 import { cn } from '@/lib/utils'
 
@@ -42,6 +43,7 @@ export function MainLayout() {
           <Outlet />
         </div>
       </main>
+      <ChatWidget />
     </div>
   )
 }

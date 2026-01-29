@@ -281,6 +281,9 @@ export const translations = {
         descriptionPlaceholder: 'Describe what this tool does. Supports Markdown.',
         descriptionHint: 'This description will be shown to AI models. Be clear and concise.',
         generateDescription: 'AI Generate',
+        configureModelFirst: 'Please configure AI model in Settings first',
+        selectQueryFirst: 'Please select a query first',
+        generateDescriptionTooltip: 'Generate tool description using AI',
       },
 
       // Parameters Tab
@@ -1025,6 +1028,9 @@ export const translations = {
         descriptionPlaceholder: '描述此工具的功能，支持 Markdown。',
         descriptionHint: '此描述将展示给 AI 模型，请确保清晰简洁。',
         generateDescription: 'AI 生成',
+        configureModelFirst: '请先在设置中配置 AI 模型',
+        selectQueryFirst: '请先选择一个 Query',
+        generateDescriptionTooltip: '使用 AI 自动生成工具描述',
       },
 
       // Parameters Tab

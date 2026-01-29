@@ -5,9 +5,11 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip'
 import type { Query, ToolFormData } from '@/types'
 import { useI18n } from '@/i18n/I18nContext'
 import { useGenerateDescription } from '@/hooks/useTools'
+import { useModelStore } from '@/stores/useModelStore'
 
 interface ToolFormProps {
   data: Partial<ToolFormData>
@@ -28,6 +30,7 @@ function toSnakeCase(str: string): string {
 export function ToolForm({ data, onChange, queries, isLoadingQueries }: ToolFormProps) {
   const { t } = useI18n()
   const generateDescription = useGenerateDescription()
+  const { isValidated: isModelConfigured } = useModelStore()
 
   const handleDisplayNameChange = useCallback((value: string) => {
     onChange({
@@ -135,20 +138,35 @@ export function ToolForm({ data, onChange, queries, isLoadingQueries }: ToolForm
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Label>{t.tools?.form?.description || 'Description'} <span className="text-destructive">*</span></Label>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleGenerateDescription}
-            disabled={!data.queryId || generateDescription.isPending}
-          >
-            {generateDescription.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Sparkles className="h-4 w-4" />
-            )}
-            {t.tools?.form?.generateDescription || 'AI Generate'}
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleGenerateDescription}
+                    disabled={!data.queryId || !isModelConfigured || generateDescription.isPending}
+                  >
+                    {generateDescription.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Sparkles className="h-4 w-4" />
+                    )}
+                    {t.tools?.form?.generateDescription || 'AI Generate'}
+                  </Button>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                {!isModelConfigured
+                  ? (t.tools?.form?.configureModelFirst || '请先在设置中配置 AI 模型')
+                  : !data.queryId
+                  ? (t.tools?.form?.selectQueryFirst || '请先选择一个 Query')
+                  : (t.tools?.form?.generateDescriptionTooltip || '使用 AI 自动生成工具描述')}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <Textarea
           value={data.description || ''}

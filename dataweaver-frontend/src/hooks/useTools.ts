@@ -1,5 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toolsApi } from '@/api/tools'
+import { queriesApi } from '@/api/queries'
+import { generateToolDescription } from '@/api/aiGenerate'
+import { useModelStore } from '@/stores/useModelStore'
 import type { ToolFormData } from '@/types'
 import { toast } from 'sonner'
 
@@ -134,15 +137,42 @@ export function useTestTool() {
   })
 }
 
-// Generate description
+// Generate description using configured AI model
 export function useGenerateDescription() {
+  const { provider, apiKey, baseUrl, model, isValidated } = useModelStore()
+
   return useMutation({
-    mutationFn: async ({ queryId, useAI = true }: { queryId: string; useAI?: boolean }) => {
-      return await toolsApi.generateDescription(queryId, useAI)
+    mutationFn: async ({ queryId }: { queryId: string }) => {
+      // Check if model is configured
+      if (!isValidated || !apiKey || !model) {
+        throw new Error('请先在设置中配置 AI 模型')
+      }
+
+      // Fetch query details
+      const queryResponse = await queriesApi.get(queryId)
+      const query = queryResponse.data.data
+
+      if (!query) {
+        throw new Error('Query not found')
+      }
+
+      // Generate description using AI
+      const description = await generateToolDescription(
+        query.name,
+        query.sql,
+        query.parameters.map(p => ({
+          name: p.name,
+          type: p.type,
+          description: p.description,
+        })),
+        { provider, apiKey, baseUrl, model }
+      )
+
+      return { description, generated: true }
     },
     onError: (error: unknown) => {
-      const err = error as { response?: { data?: { message?: string } } }
-      toast.error(err.response?.data?.message || '生成描述失败')
+      const message = error instanceof Error ? error.message : '生成描述失败'
+      toast.error(message)
     },
   })
 }
